@@ -1,5 +1,6 @@
 library(ggplot2)
 library(gridExtra)
+library(scales)
 
 read_data <- function(file) {
   data <- read.fwf(file, c(3, 27, 3, 22, 8, 4, 4), col.names=c("rank", "name", "year", "school", "rawtime", "hnum", "points"), skip=10, stringsAsFactors=F, strip.white=T)
@@ -13,26 +14,19 @@ clean <- function(data) {
   return(data)
 }
 
-encode <- function(data) {
+encode <- function(data, gender) {
   
-  data$year <- factor(data$year, levels=c("FR", "SO", "JR", "SR"))
+  data$year <- factor(data$year, levels=c("FR", "SO", "JR", "SR"), labels=c("freshman", "sophomore", "junior", "senior"))
   
   data$time <- sapply(data$rawtime, rawtimeToSeconds)
-  # data$color <- ifelse(data$school == "Santa Cruz", "blue", "lightblue")
+  data$gender <- gender
   return(data)
 }
 
 timeToStr <- function(seconds) {
   minutes <- as.integer(seconds / 60)
   seconds <- round(seconds - minutes * 60)
-  
-  # minute_prefix <- ifelse(minutes < 10, "0", "")
-  # minutes <- paste0(minute_prefix, minutes)
-  # second_prefix <- ifelse(seconds < 10, "0", "")
-  # seconds <- paste0(second_prefix, seconds)
-  
-  # time <- paste(minutes, seconds, sep=":")
-  time <- sprintf("%02d:%02d", minutes, seconds)
+  time <- sprintf("%02d' %02d\"", minutes, seconds)
   
   return(time)
 }
@@ -48,26 +42,45 @@ rawtimeToSeconds <- function(time) {
   return(seconds)
 }
 
-#boys <- read.fwf("boys_5k_d4.txt", c(3, 27, 3, 22, 8, 4, 4), col.names=c("rank", "name", "year", "school", "time", "hnum", "points"), skip=10, stringsAsFactors=F, strip.white=T)
-boys <- encode(clean(read_data("boys_5k_d4.txt")))
-girls <- encode(clean(read_data("girls_5k_d4.txt")))
+boys <- encode(clean(read_data("boys_5k_d4.txt")), "M")
+girls <- encode(clean(read_data("girls_5k_d4.txt")), "F")
 
 scboys <- boys[boys$school == "Santa Cruz",]
 scgirls <- girls[girls$school == "Santa Cruz",]
-breaks <- seq(round(min(boys$time), -2), round(max(boys$time), -2), 100)
+
+bbreaks <- seq(round(min(boys$time), -2), round(max(boys$time), -2), 100)
 pb <- ggplot(boys, aes(year, time)) +
   ggtitle("Boys 5k Run CC D 4") +
   theme(plot.title = element_text(hjust = 0.5)) +
   geom_jitter(width=0.05, color = "#00CCFF") +
   geom_point(data=scboys, aes(year, time), color="blue") +
-  scale_y_continuous(breaks=breaks, labels=timeToStr(breaks), name="Elapsed Time (mm:ss)")
+  scale_y_continuous(breaks=bbreaks, labels=timeToStr(bbreaks), name="Elapsed Time (mm:ss)")
 
-breaks <- seq(round(min(girls$time), -2), round(max(girls$time), -2), 100)
+gbreaks <- seq(round(min(girls$time), -2), round(max(girls$time), -2), 100)
 pg <- ggplot(girls, aes(year, time)) +
   ggtitle("Girls 5k Run CC D 4") +
   theme(plot.title = element_text(hjust = 0.5)) +
   geom_jitter(width=0.05, color = "#00CCFF") +
   geom_point(data=scgirls, aes(year, time), color="blue") +
-  scale_y_continuous(breaks=breaks, labels=timeToStr(breaks), name="Elapsed Time (mm:ss)")
+  scale_y_continuous(breaks=gbreaks, labels=timeToStr(gbreaks), name="Elapsed Time (mm:ss)")
 
 grid.arrange(pb, pg)
+
+all <- rbind(boys, girls)
+all$gender <- factor(all$gender)
+sc <- all[all$school == "Santa Cruz",]
+
+pal <- hue_pal()(2)
+all$color <- ifelse(all$gender == "M", pal[2], pal[1])
+scpal <- hue_pal(l=90)(2)
+sc$color <- ifelse(sc$gender == "M", scpal[2], scpal[1])
+
+allbreaks <- seq(round(min(all$time), -2), round(max(all$time), -2), 100)
+
+p <- ggplot() +
+  ggtitle("5k Run CC D 4") +
+  theme(axis.title.x = element_blank(), axis.title.y = element_blank(), plot.title = element_text(hjust = 0.1)) +
+  geom_jitter(data=all, color=all$color, aes(year, time), width=0.1) +
+  scale_y_continuous(breaks=allbreaks, labels=timeToStr(allbreaks), name="Elapsed Time (mm:ss)") +
+  geom_jitter(data=sc, width=.1, shape=21, size=2, fill=sc$color, color="black", aes(year, time))
+print(p)

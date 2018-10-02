@@ -84,3 +84,10 @@ p <- ggplot() +
   scale_y_continuous(breaks=allbreaks, labels=timeToStr(allbreaks), name="Elapsed Time (mm:ss)") +
   geom_jitter(data=sc, width=.1, height=0, shape=21, size=2, fill=sc$color, color="black", aes(year, time))
 print(p)
+
+p2 <- ggplot() +
+  ggtitle("5k Run CC D 4") +
+  geom_boxplot(data=all, aes(x=year, y=time, fill=gender, color=gender), alpha=0.1, outlier.shape=NA) +
+  geom_point(data=all, aes(year, time, fill=gender, color=gender), position=position_jitterdodge()) +
+  geom_point(data=sc, aes(year, time, fill=gender, color=color), shape=21, size=2, color="black", position=position_jitterdodge())
+print(p2)

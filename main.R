@@ -52,7 +52,7 @@ bbreaks <- seq(round(min(boys$time), -2), round(max(boys$time), -2), 100)
 pb <- ggplot(boys, aes(year, time)) +
   ggtitle("Boys 5k Run CC D 4") +
   theme(plot.title = element_text(hjust = 0.5)) +
-  geom_jitter(width=0.05, color = "#00CCFF") +
+  geom_jitter(width=0.05, height=0, color = "#00CCFF") +
   geom_point(data=scboys, aes(year, time), color="blue") +
   scale_y_continuous(breaks=bbreaks, labels=timeToStr(bbreaks), name="Elapsed Time (mm:ss)")
 
@@ -60,7 +60,7 @@ gbreaks <- seq(round(min(girls$time), -2), round(max(girls$time), -2), 100)
 pg <- ggplot(girls, aes(year, time)) +
   ggtitle("Girls 5k Run CC D 4") +
   theme(plot.title = element_text(hjust = 0.5)) +
-  geom_jitter(width=0.05, color = "#00CCFF") +
+  geom_jitter(width=0.05, height=0, color = "#00CCFF") +
   geom_point(data=scgirls, aes(year, time), color="blue") +
   scale_y_continuous(breaks=gbreaks, labels=timeToStr(gbreaks), name="Elapsed Time (mm:ss)")
 
@@ -80,7 +80,7 @@ allbreaks <- seq(round(min(all$time), -2), round(max(all$time), -2), 100)
 p <- ggplot() +
   ggtitle("5k Run CC D 4") +
   theme(axis.title.x = element_blank(), axis.title.y = element_blank(), plot.title = element_text(hjust = 0.1)) +
-  geom_jitter(data=all, color=all$color, aes(year, time), width=0.1) +
+  geom_jitter(data=all, color=all$color, aes(year, time), width=0.1, height=0) +
   scale_y_continuous(breaks=allbreaks, labels=timeToStr(allbreaks), name="Elapsed Time (mm:ss)") +
-  geom_jitter(data=sc, width=.1, shape=21, size=2, fill=sc$color, color="black", aes(year, time))
+  geom_jitter(data=sc, width=.1, height=0, shape=21, size=2, fill=sc$color, color="black", aes(year, time))
 print(p)

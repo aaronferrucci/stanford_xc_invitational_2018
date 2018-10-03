@@ -87,7 +87,9 @@ print(p)
 
 p2 <- ggplot() +
   ggtitle("5k Run CC D 4") +
+  theme(axis.title.x = element_blank(), axis.title.y = element_blank()) +
   geom_boxplot(data=all, aes(x=year, y=time, fill=gender, color=gender), alpha=0.1, outlier.shape=NA) +
   geom_point(data=all, aes(year, time, fill=gender, color=gender), position=position_jitterdodge()) +
-  geom_point(data=sc, aes(year, time, fill=gender, color=color), shape=21, size=2, color="black", position=position_jitterdodge())
-print(p2)
+  geom_point(data=sc, aes(year, time, fill=gender, color=color), shape=21, size=2, color="black", position=position_jitterdodge()) +
+  scale_y_continuous(breaks=allbreaks, labels=timeToStr(allbreaks), name="Elapsed Time (mm:ss)")
+  print(p2)

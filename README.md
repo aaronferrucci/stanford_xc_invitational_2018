@@ -5,3 +5,4 @@ Invitational. The plot shows run duration by grade, colored by gender.
 
 ![alt text](https://github.com/aaronferrucci/stanford_xc_invitational_2018/blob/master/plot_all.png "PNG plot")
 
+![alt text](https://github.com/aaronferrucci/stanford_xc_invitational_2018/blob/master/plot_box.png "PNG plot")
